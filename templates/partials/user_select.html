@@ -1,0 +1,21 @@
+<div id="user-select-wrap" {% if oob %}hx-swap-oob="true"{% endif %} class="flex items-center gap-2">
+    <div class="relative">
+        <select id="user-select"
+                name="user_id"
+                class="user-select"
+                aria-label="Choose a CineMatch profile"
+                hx-get="/ui/dashboard"
+                hx-target="#dashboard"
+                hx-swap="outerHTML"
+                hx-include="this"
+                hx-indicator="#global-loader">
+            <option value="0" {% if not selected_user_id %}selected{% endif %}>Choose a profile</option>
+            {% for u in user_list %}
+            <option value="{{ u.id }}" {% if u.id == selected_user_id %}selected{% endif %}>
+                {{ u.name }} · {{ u.classified_movie_count }} ratings
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <a href="#create-profile" class="hidden sm:inline-flex btn-ghost text-xs">New profile</a>
+</div>

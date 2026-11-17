@@ -1,0 +1,65 @@
+{% from "partials/macros.html" import movie_card %}
+<div id="movie-grid" class="space-y-5">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-400">
+            Showing <span class="font-semibold text-white">{{ movies | length }}</span>
+            of <span class="font-semibold text-white">{{ total }}</span> films
+            {% if search %}for “<span class="text-rose-300">{{ search }}</span>”{% endif %}
+            {% if genre and genre != 'all' %}in <span class="text-rose-300">{{ genre }}</span>{% endif %}
+        </p>
+        <p class="text-xs text-slate-600">Page {{ page }} of {{ pages }}</p>
+    </div>
+
+    {% if movies %}
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {% for movie in movies %}
+        {{ movie_card(movie) }}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass-card rounded-2xl p-10 text-center">
+        <p class="text-4xl">🍿</p>
+        <h3 class="mt-3 font-display text-xl font-bold text-white">No films found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try a different title, genre, or clear the search.</p>
+    </div>
+    {% endif %}
+
+    {% if pages > 1 %}
+    <nav class="flex items-center justify-center gap-2 pt-2" aria-label="Movie pages">
+        <button type="button"
+                class="page-btn {% if page <= 1 %}opacity-40 pointer-events-none{% endif %}"
+                hx-get="/ui/movies"
+                hx-target="#movie-grid"
+                hx-include="#movie-filters"
+                hx-vals='{"page": {{ page - 1 }}}'
+                hx-indicator="#global-loader">← Prev</button>
+
+        {% set start = [1, page - 2] | max %}
+        {% set end = [pages, page + 2] | min %}
+        {% if start > 1 %}
+        <button type="button" class="page-btn" hx-get="/ui/movies" hx-target="#movie-grid" hx-include="#movie-filters" hx-vals='{"page": 1}'>1</button>
+        {% if start > 2 %}<span class="px-1 text-slate-600">…</span>{% endif %}
+        {% endif %}
+        {% for number in range(start, end + 1) %}
+        <button type="button"
+                class="page-btn {% if number == page %}page-btn-active{% endif %}"
+                hx-get="/ui/movies"
+                hx-target="#movie-grid"
+                hx-include="#movie-filters"
+                hx-vals='{"page": {{ number }}}'>{{ number }}</button>
+        {% endfor %}
+        {% if end < pages %}
+        {% if end < pages - 1 %}<span class="px-1 text-slate-600">…</span>{% endif %}
+        <button type="button" class="page-btn" hx-get="/ui/movies" hx-target="#movie-grid" hx-include="#movie-filters" hx-vals='{"page": {{ pages }}}'>{{ pages }}</button>
+        {% endif %}
+
+        <button type="button"
+                class="page-btn {% if page >= pages %}opacity-40 pointer-events-none{% endif %}"
+                hx-get="/ui/movies"
+                hx-target="#movie-grid"
+                hx-include="#movie-filters"
+                hx-vals='{"page": {{ page + 1 }}}'
+                hx-indicator="#global-loader">Next →</button>
+    </nav>
+    {% endif %}
+</div>

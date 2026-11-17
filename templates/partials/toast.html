@@ -1,0 +1,8 @@
+{% if toast %}
+<div id="toast" hx-swap-oob="innerHTML">
+    <div class="toast-card {% if toast_kind == 'error' %}toast-error{% else %}toast-success{% endif %}">
+        <span class="toast-icon">{% if toast_kind == 'error' %}!{% else %}✓{% endif %}</span>
+        <span>{{ toast }}</span>
+    </div>
+</div>
+{% endif %}
